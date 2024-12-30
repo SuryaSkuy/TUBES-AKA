@@ -2,26 +2,24 @@ import time
 import matplotlib.pyplot as plt
 from prettytable import PrettyTable
 
-# Linear Search
+# Linear Search (iterative)
 def linear_search(books, target):
     for index, book in enumerate(books):
         if book == target:
             return index
     return -1
 
-# Binary Search
-def binary_search(books, target):
-    low, high = 0, len(books) - 1
-    while low <= high:
-        mid = (low + high) // 2
-        if books[mid] == target:
-            return mid
-        elif books[mid] < target:
-            low = mid + 1
-        else:
-            high = mid - 1
-    return -1
-
+# Binary Search (Recuirsive)
+def binary_search_recursive(books, target, low, high):
+    if low > high:
+        return -1
+    mid = (low + high) // 2
+    if books[mid] == target:
+        return mid
+    elif books[mid] < target:
+        return binary_search_recursive(books, target, mid + 1, high)  # Rekursi setengah atas
+    else:                               
+        return binary_search_recursive(books, target, low, mid - 1)   # Rekursi setengah bawah
 # Grafik untuk menyimpan data
 n_values = []
 linear_times = []
@@ -32,7 +30,7 @@ def update_graph():
     plt.figure(figsize=(8, 6))
     plt.plot(n_values, linear_times, label='Linear Search', marker='o', linestyle='-')
     plt.plot(n_values, binary_times, label='Binary Search', marker='o', linestyle='-')
-    plt.title('Performance Comparison: Linear vs Binary Search')
+    plt.title('Performance Comparison: Linear Search Iteratif vs Binary Search Rekursif')
     plt.xlabel('Dataset Size (Number of Books)')
     plt.ylabel('Execution Time (seconds)')
     plt.legend()
@@ -44,7 +42,7 @@ def update_graph():
 # Fungsi untuk mencetak tabel waktu eksekusi
 def print_execution_table():
     table = PrettyTable()
-    table.field_names = ["Dataset Size", "Linear Time (s)", "Binary Time (s)"]
+    table.field_names = ["Dataset Size", "Linear Time Iteratif (s)", "Binary Time Rekursif (s)"]
     min_len = min(len(n_values), len(linear_times), len(binary_times))
     for i in range(min_len):
         table.add_row([n_values[i], linear_times[i], binary_times[i]])
@@ -75,7 +73,7 @@ while True:
         # Ukur waktu eksekusi Binary Search
         books.sort()  # Binary Search membutuhkan dataset terurut
         start_time = time.time()
-        binary_search(books, target)
+        binary_search_recursive(books, target, 0, len(books) - 1)
         binary_times.append(time.time() - start_time)
 
         # Cetak tabel waktu eksekusi
